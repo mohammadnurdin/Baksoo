@@ -1,0 +1,28 @@
+{
+  "menu": [
+    {
+      "name": "Bakso",
+      "price": "2000",
+      "id": 1
+    },
+    {
+      "name": "Bakso urat",
+      "price": "3000",
+      "id": 2
+    },
+    {
+      "name": "Bakso Iga",
+      "price": "3000",
+      "id": 3
+    }
+  ],
+  "orders": [
+    {
+      "name": "Mohammad Nurdin Hidayat",
+      "order": "Mie bakso",
+      "count": "2",
+      "price": "3000",
+      "id": 1
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    table,
+    tr,
+    th,
+    td {
+      border: 1px solid black;
+      padding: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <h3>Aplikasi Pemesanan Bakso</h3>
+  <p>Selamat datang di Pemesanan Bakso..</p>
+  <p>Silakan masukan data!</p>
+  <div>
+    <label for="name">Nama Pemesan:</label>
+    <input id="customer" type="text" placeholder="Isi nama Pemesanan disini...">
+  </div>
+  <div style="display: flex; gap: 10px; margin-top: 10px;" id="menu">
+  </div>
+
+  <h3>Aplikasi Pesanan Bakso</h3>
+  <h6>Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, vel.</h6>
+  <div style="margin-top: 10px">
+    <table>
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Nama</th>
+          <th>Pesanan</th>
+          <th>Jumlah</th>
+          <th>Harga</th>
+          <th>Total</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="result"></tbody>
+    </table>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      const pesanMenu = async (name, price) => {
+        let text = `${name} akan dipesan?`;
+        let customer = document.getElementById("customer").value;
+        if (confirm(text) == true) {
+          let jumlah = prompt("Berapa Jumlahnya??");
+          await axios.post(`http://localhost:3000/orders`, {
+            name: customer,
+            order: name,
+            count: jumlah,
+            price: price
+          })
+            .then((response) => {
+              alert("Pesanan Ditambahkan")
+              console.log(response)
+            })
+            .catch((error) => {
+              console.log(error.message)
+            })
+
+        }
+      }
+      const getMenu = async () => {
+        await axios.get(`http://localhost:3000/menu`)
+          .then((response) => {
+            let bucket = ``;
+            let menu = response.data;
+
+            if (menu.length > 0) {
+              for (let i = 0; i < menu.length; i++) {
+                bucket += `
+                            <div style="border: 1px solid black; padding: 10px; text-align: center;">
+                                <div style="height: 30px; width: 90px; background-color: red;"> </div>
+                                <h5>${menu[i].name}</h5>
+                                <h6>${menu[i].price}</h6>
+                                <button onclick="pesanMenu('${menu[i].name}','${menu[i].price}')">Pesan</button>
+                             </div>
+                            `
+              }
+            } else {
+              bucket += `
+              <tr>
+                <td colspan="5" style="text-align: center">Data tidak ditemukan</td>
+              </tr>
+            `
+            }
+
+            document.getElementById('menu').innerHTML = bucket;
+          })
+          .catch((error) => {
+            let bucket = `
+          <tr>
+            <td colspan="5" style="text-align: center">${error.message}</td>
+          </tr>
+        `
+            document.getElementById('result').innerHTML = bucket;
+          });
+      }
+      getMenu();
+    </script>
+
+    <script>
+      const deleteOrders = async (id) => {
+        let text = "Apakah akan Membatalkan Pesanan?"
+        if (confirm(text) == true) {
+          await axios.delete(`http://localhost:3000/orders/${id}`)
+            .then((response) => {
+              console.log(response)
+              getOrders()
+            })
+            .catch((error) => {
+              console.log(error.message)
+            })
+        }
+
+      }
+      const getOrders = async () => {
+        await axios.get(`http://localhost:3000/orders`)
+          .then((response) => {
+            let bucket = ``;
+            let orders = response.data;
+            if (orders.length > 0) {
+              for (let i = 0; i < orders.length; i++) {
+                bucket += `
+                            <tr>
+                              <td>${i + 1}</td>
+                              <td>${orders[i].name}</td>
+                              <td>${orders[i].order}</td>
+                              <td>${orders[i].count}</td>
+                              <td>${orders[i].price}</td>
+                              <td>${orders[i].count * orders[i].price}</td>
+                              <td>
+                              <button onclick="deleteOrders('${orders[i].id}')">Delete</button>  
+                              </td>
+                            </tr>
+                            `
+              }
+            } else {
+              bucket += `
+              <tr>
+                <td colspan="5" style="text-align: center">Data tidak ditemukan</td>
+              </tr>
+            `
+            }
+
+            document.getElementById('result').innerHTML = bucket;
+          })
+          .catch((error) => {
+            let bucket = `
+          <tr>
+            <td colspan="5" style="text-align: center">${error.message}</td>
+          </tr>
+        `
+            document.getElementById('result').innerHTML = bucket;
+          });
+      }
+      getOrders();
+    </script>
+
+
+
+</body>
+
+
+</html>
